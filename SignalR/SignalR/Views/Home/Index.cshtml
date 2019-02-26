@@ -1,24 +1,62 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿
+@{
+    ViewBag.Title = "聊天窗口";
+}
+<h2>Chat</h2>
+<div class="container">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <ul id="discussion">
+        <li>aaa</li>
+    </ul>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
-</div>
+
+@section scripts
+{
+    <!--引用SignalR库. -->
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+    <!--引用自动生成的SignalR 集线器(Hub)脚本.在运行的时候在浏览器的Source下可看到 -->
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+        $(function ()
+        {
+            // 1、引用自动生成的集线器代理 必须用小写字母开头
+            var chat = $.connection.chatHub;
+
+            // 2、开始连接服务器 done函数表明建立连接成功后为发送按钮注册了一个click事件
+            $.connection.hub.start().done(function ()
+            {
+                $('#sendmessage').click(function ()
+                {
+                    debugger;
+                    alert($('#message').val());
+                    // 调用服务器端集线器的Send方法 也要小写开头
+                    chat.server.send($('#message').val());
+                    // 清空输入框信息并获取焦点
+                    $('#message').val('').focus();
+                });
+            });
+
+            // 3、定义服务器端调用的客户端sendMessage来显示新消息
+            chat.client.sendMessage = function (name, message)
+            {
+                debugger;
+                // 向页面添加消息
+                $('#discussion').append('<li><strong>' + htmlEncode(name)
+                    + '</strong>: ' + htmlEncode(message) + '</li>');
+            };
+
+            // 设置焦点到输入框
+            $('#message').focus();
+        });
+
+        // 为显示的消息进行Html编码
+        function htmlEncode(value)
+        {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+}
