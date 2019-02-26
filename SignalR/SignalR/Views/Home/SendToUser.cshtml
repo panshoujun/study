@@ -1,16 +1,13 @@
 ﻿
 @{
-    ViewBag.Title = "聊天窗口";
+    ViewBag.Title = "聊天窗口.发送指定用户";
 }
 <h2>Chat</h2>
-<div class="container">
-    <input type="text" id="username" />
-    <input type="text" id="message" />
-    <input type="button" id="sendmessage" value="Send" />
-    <input type="hidden" id="displayname" />
-    <ul id="discussion">
-        <li>aaa</li>
-    </ul>
+<input type="text" id="username" />
+<input type="text" id="message" />
+<input type="button" id="sendmessage" value="Send" />
+<input type="hidden" id="displayname" />
+<ul id="discussion"></ul>
 </div>
 
 @section scripts
@@ -23,26 +20,21 @@
     <script>
         function GetQueryString(name)
         {
-            　　var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-            　　var r = window.location.search.substr(1).match(reg);
-            　　if (r != null) return unescape(r[2]);
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
             return null;
         }
-
-
-
 
         $(function ()
         {
             $('#username').val(GetQueryString("username"));
-
             // 1、引用自动生成的集线器代理 必须用小写字母开头
             var chat = $.connection.chatHub;
 
             // 3、定义服务器端调用的客户端sendMessage来显示新消息
             chat.client.sendMessage = function (name, message)
             {
-                //debugger;
                 // 向页面添加消息
                 $('#discussion').append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
@@ -52,13 +44,10 @@
             $.connection.hub.start().done(function ()
             {
                 chat.server.online($('#username').val());//QQ昵称
-
                 $('#sendmessage').click(function ()
                 {
-                    //debugger;
-                    //alert($('#message').val());
-                    // 调用服务器端集线器的Send方法 也要小写开头
-                    chat.server.send($('#message').val());
+                    // 调用服务器端集线器的sendToUser方法 也要小写开头
+                    chat.server.sendToUser($('#username').val(), $('#message').val());
                     // 清空输入框信息并获取焦点
                     $('#message').val('').focus();
                 });
@@ -78,3 +67,5 @@
         }
     </script>
 }
+
+

@@ -14,5 +14,15 @@ namespace SignalR.Controllers
 
             return View();
         }
+
+        public ActionResult SendToAll()
+        {
+            return View();
+        }
+
+        public ActionResult SendToUser()
+        {
+            return View();
+        }
     }
 }
