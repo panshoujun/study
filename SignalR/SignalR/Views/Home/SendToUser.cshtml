@@ -2,16 +2,45 @@
 @{
     ViewBag.Title = "聊天窗口.发送指定用户";
 }
-<h2>Chat</h2>
-<input type="text" id="username" />
-<input type="text" id="message" />
-<input type="button" id="sendmessage" value="Send" />
-<input type="hidden" id="displayname" />
-<ul id="discussion"></ul>
+<div>
+    <div id="main"></div>
+    <input type="text" id="username" />
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <ul id="discussion"></ul>
 </div>
+<style>
+    body {
+        font-family: "微软雅黑";
+    }
+
+    .sender {
+        clear: both;
+    }
+
+        .sender div:nth-of-type(1) {
+            float: left;
+        }
+
+        .sender div:nth-of-type(2) {
+            background-color: aquamarine;
+            float: left;
+            margin: 0 20px 10px 15px;
+            padding: 10px 10px 10px 0px;
+            border-radius: 7px;
+        }
+
+        .receiver div:first-child img,
+        .sender div:first-child img {
+            width: 50px;
+            height: 50px;
+        }
+</style>
 
 @section scripts
 {
+
     <!--引用SignalR库. -->
     <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
     <!--引用自动生成的SignalR 集线器(Hub)脚本.在运行的时候在浏览器的Source下可看到 -->
@@ -26,6 +55,20 @@
             return null;
         }
 
+        var leftHtml = [
+            '<div class="sender">',
+            '<div><img src="http://img.jfdown.com/jfdown/201403/ygald3wajct.jpg"></div>',
+            '<div><div class="left_triangle"></div>',
+            '<span>{msg}</span></div></div>'
+        ].join('');
+
+        var rightHtml = [
+            '<div class="receiver">',
+            '<div><img src="http://tb.himg.baidu.com/sys/portrait/item/306c9328?t=1397975854"></div>',
+            '<div><div class="right_triangle"></div>',
+            '<span>{msg}</span></div></div>'
+        ].join('');
+
         $(function ()
         {
             $('#username').val(GetQueryString("username"));
@@ -38,6 +81,7 @@
                 // 向页面添加消息
                 $('#discussion').append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
+                $('#main').append(leftHtml.replace('{msg}', name + ":" + message));
             };
 
             // 2、开始连接服务器 done函数表明建立连接成功后为发送按钮注册了一个click事件
@@ -48,12 +92,14 @@
                 {
                     // 调用服务器端集线器的sendToUser方法 也要小写开头
                     chat.server.sendToUser($('#username').val(), $('#message').val());
+                    $('#main').append(rightHtml.replace('{msg}', $('#username').val() + ":" + $('#message').val()));
                     // 清空输入框信息并获取焦点
                     $('#message').val('').focus();
+
                 });
             });
 
-            
+
 
             // 设置焦点到输入框
             $('#message').focus();
