@@ -8,11 +8,27 @@ namespace SignalR.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(int count = 51)
         {
             ViewBag.Title = "Home Page";
-
             return View();
+        }
+
+        public JsonResult GetSum(int count = 51, double init = 1)
+        {
+            double sum = 0;
+            double temp = init;
+            for (int i = 0; i < count; i++)
+            {
+                init *= 2;
+                sum += init;
+            }
+            return Json(new
+            {
+                sum,
+                init,
+                pow = Math.Pow(2, count) * temp
+            }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult SendToAll()

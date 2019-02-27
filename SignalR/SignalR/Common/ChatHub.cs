@@ -17,6 +17,22 @@ namespace SignalR.Common
         }
 
         /// <summary>
+        /// 获取客户端连接ID
+        /// </summary>
+        public void GetConnectionId()
+        {
+            try
+            {
+                string connectionId = Context.ConnectionId;//客户端ID
+                Clients.Client(connectionId).showConnectionId(connectionId);//获取客户端连接ID
+            }
+            catch (Exception exception)
+            {
+
+            }
+        }
+
+        /// <summary>
         /// 自定义上线
         /// </summary>
         /// <param name="name"></param>
@@ -37,6 +53,9 @@ namespace SignalR.Common
                     ConnectionId = connId,
                     Name = name
                 });
+
+                //把客户连接ID返回给客户端
+                Clients.Client(connId).showConnectionId(connId);
             }
         }
 

@@ -4,11 +4,13 @@
 }
 <div>
     <div id="main"></div>
+    <div id="ConnectionId"></div>
     <input type="text" id="username" />
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" />
     <input type="hidden" id="displayname" />
     <ul id="discussion"></ul>
+    <div id="code"></div>
 </div>
 <style>
     body {
@@ -40,7 +42,7 @@
 
 @section scripts
 {
-
+    <script src="~/Scripts/jquery-qrcode/jquery-qrcode.js"></script>
     <!--引用SignalR库. -->
     <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
     <!--引用自动生成的SignalR 集线器(Hub)脚本.在运行的时候在浏览器的Source下可看到 -->
@@ -69,13 +71,48 @@
             '<span>{msg}</span></div></div>'
         ].join('');
 
+        function toUtf8(str)
+        {
+            var out, i, len, c;
+            out = "";
+            len = str.length;
+            for (i = 0; i < len; i++)
+            {
+                c = str.charCodeAt(i);
+                if ((c >= 0x0001) && (c <= 0x007F))
+                {
+                    out += str.charAt(i);
+                } else if (c > 0x07FF)
+                {
+                    out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                    out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                } else
+                {
+                    out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+            }
+            return out;
+        }
+
         $(function ()
         {
+            //生成二维码
+            $("#code").qrcode({
+                render: "table", //table方式
+                width: 200, //宽度
+                height: 200, //高度
+                text: "http://www.webpsj.com" //任意内容
+            });
+
             $('#username').val(GetQueryString("username"));
+
+
             // 1、引用自动生成的集线器代理 必须用小写字母开头
             var chat = $.connection.chatHub;
 
-            // 3、定义服务器端调用的客户端sendMessage来显示新消息
+            // 3、定义服务器端调用的客户端sendMessage来显示新消息(定义服务端调用客户端的方法)
             chat.client.sendMessage = function (name, message)
             {
                 // 向页面添加消息
@@ -84,10 +121,18 @@
                 $('#main').append(leftHtml.replace('{msg}', name + ":" + message));
             };
 
+            //(定义服务端调用客户端的方法)
+            chat.client.showConnectionId = function (ConnectionId)
+            {
+                $('#ConnectionId').append(leftHtml.replace('{msg}', "ConnectionId=" + ConnectionId));
+            };
+
+
             // 2、开始连接服务器 done函数表明建立连接成功后为发送按钮注册了一个click事件
             $.connection.hub.start().done(function ()
             {
-                chat.server.online($('#username').val());//QQ昵称
+                chat.server.online($('#username').val());//上线 连接服务端
+
                 $('#sendmessage').click(function ()
                 {
                     // 调用服务器端集线器的sendToUser方法 也要小写开头
@@ -95,7 +140,6 @@
                     $('#main').append(rightHtml.replace('{msg}', $('#username').val() + ":" + $('#message').val()));
                     // 清空输入框信息并获取焦点
                     $('#message').val('').focus();
-
                 });
             });
 
