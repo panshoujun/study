@@ -40,5 +40,12 @@ namespace SignalR.Controllers
         {
             return View();
         }
+
+        public ActionResult ScanQrCodeLogin()
+        {
+            ViewBag.CurrentUser = Guid.NewGuid().ToString();
+            return View();
+        }
+
     }
 }

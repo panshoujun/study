@@ -203,6 +203,9 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Common\ChatHub.cs" />
+    <Compile Include="Common\MyChatHub.cs" />
+    <Compile Include="Common\MyConnection.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -244,6 +247,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\common\helper.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
@@ -269,6 +273,11 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\SendToAll.cshtml" />
     <Content Include="Views\Home\SendToUser.cshtml" />
+    <Content Include="Views\Home\ScanQrCodeLogin.cshtml" />
+    <Content Include="Views\Chat\NotAgent.cshtml" />
+    <Content Include="Views\Chat\Agent.cshtml" />
+    <Content Include="Views\Chat\Persistent.cshtml" />
+    <Content Include="Views\Chat\PersistentEnter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

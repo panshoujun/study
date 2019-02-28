@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "ScanQrCodeLogin";
+}
+<input type="button" id="btnGetConnectionId" value="ConnectionId" />
+<br />
+<div id="CurrentUser">@ViewBag.CurrentUser</div>
+<br />
+<div id="ConnectionId"></div>
+<br />
+<div id="getConnectionId"></div>
+<br />
+<div id="code"></div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery-qrcode/jquery-qrcode.js"></script>
+    <!--引用SignalR库. -->
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+    <!--引用自动生成的SignalR 集线器(Hub)脚本.在运行的时候在浏览器的Source下可看到 -->
+    <script src="~/signalr/hubs"></script>
+
+    <script>
+
+        // 为显示的消息进行Html编码
+        function htmlEncode(value)
+        {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+
+        //中文转换utf-8
+        function toUtf8(str)
+        {
+            var out, i, len, c;
+            out = "";
+            len = str.length;
+            for (i = 0; i < len; i++)
+            {
+                c = str.charCodeAt(i);
+                if ((c >= 0x0001) && (c <= 0x007F))
+                {
+                    out += str.charAt(i);
+                } else if (c > 0x07FF)
+                {
+                    out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                    out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                } else
+                {
+                    out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+            }
+            return out;
+        }
+
+        //生成二维码
+        function QrCode(text)
+        {
+            $("#code").qrcode({
+                render: "table", //table方式
+                width: 200, //宽度
+                height: 200, //高度
+                text: text//任意内容
+            });
+        }
+
+        $(function ()
+        {
+            // 1、引用自动生成的集线器代理 必须用小写字母开头
+            var chat = $.connection.chatHub;
+
+            //3(定义服务端调用客户端的方法)
+            chat.client.showConnectionId = function (ConnectionId)
+            {
+                $('#ConnectionId').append("ConnectionId=" + ConnectionId);
+                QrCode("http://www.webpsj.com/home/Authorize?CurrentUser=" + $("#CurrentUser").text() + "&ConnectionId=" + ConnectionId);
+            };
+            chat.client.getConnectionId = function (ConnectionId)
+            {
+                $('#getConnectionId').append("ConnectionId=" + ConnectionId + "<br />");
+            };
+
+
+            // 2、开始连接服务器 done函数表明建立连接成功后为发送按钮注册了一个click事件
+            $.connection.hub.start().done(function ()
+            {
+                chat.server.online($('#CurrentUser').text());//上线 连接服务端
+
+                $('#btnGetConnectionId').click(function ()
+                {
+                    // 调用服务器端集线器的sendToUser方法 也要小写开头
+                    chat.server.getConnectionId();
+                });
+            });
+        });
+    </script>
+}
+

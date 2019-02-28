@@ -24,7 +24,7 @@ namespace SignalR.Common
             try
             {
                 string connectionId = Context.ConnectionId;//客户端ID
-                Clients.Client(connectionId).showConnectionId(connectionId);//获取客户端连接ID
+                Clients.Client(connectionId).getConnectionId(connectionId);//获取客户端连接ID
             }
             catch (Exception exception)
             {

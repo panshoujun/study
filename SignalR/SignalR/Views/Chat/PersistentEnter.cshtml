@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewBag.Title = "PersistentEnter";
+}
+
+<div id="msg">
+    该页面浏览受限，已自动将您的浏览请求发给管理员，请稍候。。。
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            var conn = $.connection("/MyConnection");
+
+            conn.start().fail(function (msg)
+            {
+                alert(msg);
+            });
+
+            conn.received(function (data)
+            {
+                if (data == "pass")
+                {
+                    $("#msg").html("管理员已审核通过，可以进入浏览详情。");
+                    setTimeout(function ()
+                    {
+                        self.location = "http://www.zuowenjun.cn";
+                    }, 3000);
+                }
+                else
+                {
+                    $("#msg").html("无管理员在线，请稍候再重新进入该页面。");
+                }
+            });
+        });
+    </script>
+}
+
