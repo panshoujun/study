@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewBag.Title = "采用集线器类（Hub）+自动生成代理模式";
+}
+
+<style type="text/css">
+    #chatbox {
+        width: 100%;
+        height: 500px;
+        border: 2px solid blue;
+        padding: 5px;
+        margin: 5px 0px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .linfo {
+    }
+
+    .rinfo {
+        text-align: right;
+    }
+</style>
+
+<h3>大众聊天室</h3>
+<div id="chatbox">
+</div>
+<div>
+    <span>聊天名称：</span>
+    @Html.Hidden("hidclientname", ViewBag.ClientName as string, new { @readonly = "readonly", style = "width:300px;" })
+    @Html.TextBox("clientname", ViewBag.ClientName as string, new { @readonly = "readonly", style = "width:300px;" })
+    <span>聊天对象：</span>
+    @Html.DropDownList("users", ViewBag.OnLineUsers as IEnumerable<SelectListItem>)
+</div>
+<div>
+    @Html.TextArea("message", new { rows = 5, style = "width:500px;" })
+    <input type="button" value="发送消息" id="btnSend" />
+</div>
+
+@section scripts
+{
+    <!--引用SignalR库. -->
+    <script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+    <!--引用自动生成的SignalR 集线器(Hub)脚本.在运行的时候在浏览器的Source下可看到 -->
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+        function GetQueryString(name)
+        {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]);
+            return null;
+        }
+
+        document.onkeydown = function (event)
+        {
+            if (event.keyCode == 13)
+            {
+                $("#btnSend").click();
+                return false;
+            }
+        }
+
+        $(function ()
+        {
+            var clientName = GetQueryString("clientname");
+            var eChatBox = $("#chatbox");
+            var eUsers = $("#users");
+            clientName = prompt('请输入您的姓名:', '');
+
+            if (clientName == null || clientName == undefined || clientName == '')
+            {
+                clientName = $("#hidclientname").val();
+            }
+            $("#clientname").val(clientName);
+
+            var chat = $.connection.chat;
+            $.connection.hub.qs = { "clientName": clientName };//设置querystring参数
+            chat.state.test = "test";
+
+            //用户接受消息
+            chat.client.receiveMessage = function (dt, cn, msg)
+            {
+                var clsName = "linfo";
+                if (cn == clientName || cn.indexOf("您对") >= 0) clsName = "rinfo";
+                eChatBox.append("<p class='" + clsName + "'>" + dt + " <strong>" + cn + "</strong> 说：<br/>" + msg + "</p>");
+                eChatBox.scrollTop(eChatBox[0].scrollHeight);
+            }
+
+            //用户变更 上线或者离线
+            chat.client.userChange = function (dt, msg, users)
+            {
+                eChatBox.append("<p>" + dt + " " + msg + "</p>");//离开人员提示
+                eUsers.find("option[value!='']").remove();//清空可聊天人员
+
+                //重新添加可聊天人员
+                for (var i = 0; i < users.length; i++)
+                {
+                    if (users[i].Value == clientName) continue;
+                    eUsers.append("<option value='" + users[i].Key + "'>" + users[i].Value + "</option>")
+                }
+            }
+
+            $.connection.hub.start().done(function ()
+            {
+                $("#btnSend").click(function ()
+                {
+                    var toUserId = eUsers.val();
+                    if (toUserId != "")
+                    {
+                        chat.server.sendOne(toUserId, $("#message").val())
+                            .done(function ()
+                            {
+                                //alert("发送成功！");
+                                $("#message").val("").focus();
+                            })
+                            .fail(function (e)
+                            {
+                                alert(e);
+                                $("#message").focus();
+                            });
+                    }
+                    else
+                    {
+                        chat.server.send($("#message").val())
+                            .done(function ()
+                            {
+                                //alert("发送成功！");
+                                $("#message").val("").focus();
+                            })
+                            .fail(function (e)
+                            {
+                                alert(e);
+                                $("#message").focus();
+                            });
+                    }
+                });
+
+            });
+
+        });
+    </script>
+}
+

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Model</name>
+    </assembly>
+    <members>
+        <member name="T:Model.TestModel">
+            <summary>
+            测试类
+            </summary>
+        </member>
+        <member name="P:Model.TestModel.ID">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:Model.TestModel.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Model.TestModel.Age">
+            <summary>
+            年纪
+            </summary>
+        </member>
+        <member name="P:Model.TestModel.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+    </members>
+</doc>
