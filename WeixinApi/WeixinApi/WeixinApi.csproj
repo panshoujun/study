@@ -190,6 +190,10 @@
   <ItemGroup>
     <Compile Include="ApiControllers\MPController.cs" />
     <Compile Include="ApiControllers\QYController.cs" />
+    <Compile Include="ApiControllers\QY\CommonController.cs" />
+    <Compile Include="ApiControllers\QY\DepartmentMngController.cs" />
+    <Compile Include="ApiControllers\QY\MemberMngController.cs" />
+    <Compile Include="ApiControllers\QY\MessageMngController.cs" />
     <Compile Include="ApiControllers\TestController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\Hub\ChatHub.cs" />

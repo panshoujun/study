@@ -29,11 +29,16 @@
             return null;
         }
 
-
+        function ForArray()
+        {
+            var arr = [1, 2, 3, 4, 5];
+            arr.forEach(item => {  alert(item); });
+        }
 
 
         $(function ()
         {
+            ForArray();
             $('#username').val(GetQueryString("username"));
 
             // 1、引用自动生成的集线器代理 必须用小写字母开头

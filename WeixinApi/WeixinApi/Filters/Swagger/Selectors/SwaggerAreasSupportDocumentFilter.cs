@@ -12,7 +12,7 @@ namespace WeixinApi.Filters
     /// <summary>
     /// Swagger区域文档过滤器
     /// </summary>
-    public class SwaggerAreasSupportDocumentFilter:IDocumentFilter
+    public class SwaggerAreasSupportDocumentFilter : IDocumentFilter
     {
         /// <summary>
         /// 申请处理
@@ -22,14 +22,14 @@ namespace WeixinApi.Filters
         /// <param name="apiExplorer"></param>
         public void Apply1(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            IDictionary<string,PathItem> replacePaths=new ConcurrentDictionary<string,PathItem>();
+            IDictionary<string, PathItem> replacePaths = new ConcurrentDictionary<string, PathItem>();
             foreach (var item in swaggerDoc.paths)
             {
                 string key = item.Key;
                 var value = item.Value;
                 var keys = key.Split('/');
-                
-                if (keys[3].IndexOf('.')!=-1)
+
+                if (keys[3].IndexOf('.') != -1)
                 {
                     // 区域路径
                     string areasName = keys[2];
@@ -46,7 +46,7 @@ namespace WeixinApi.Filters
                             value);
                     }
                 }
-                else if(keys[2].IndexOf('.')!=-1)
+                else if (keys[2].IndexOf('.') != -1)
                 {
                     // 基础路径
                     string namespaceFullName = keys[2];
@@ -59,8 +59,8 @@ namespace WeixinApi.Filters
                         item.Key.Replace(namespaceFullName,
                             controllerName.Substring(0,
                                 controllerName.Length - DefaultHttpControllerSelector.ControllerSuffix.Length)), value);
-                    }                    
-                }               
+                    }
+                }
             }
             swaggerDoc.paths = replacePaths;
         }
@@ -107,10 +107,17 @@ namespace WeixinApi.Filters
                     string controllerName = directoryNames[nplen + 1];
                     if (isControllers)
                     {
-                        replacePaths.Add(
-                        item.Key.Replace(namespaceFullName,
-                            controllerName.Substring(0,
-                                controllerName.Length - DefaultHttpControllerSelector.ControllerSuffix.Length)), value);
+                        if (controllerName.Contains(DefaultHttpControllerSelector.ControllerSuffix))
+                        {
+                            replacePaths.Add(item.Key.Replace(namespaceFullName,
+                                                        controllerName.Substring(0,
+                                                            controllerName.Length - DefaultHttpControllerSelector.ControllerSuffix.Length)), value);
+                        }
+                        else
+                        {
+                            replacePaths.Add(controllerName, value);
+                        }
+
                     }
                 }
             }
