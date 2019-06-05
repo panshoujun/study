@@ -19,7 +19,7 @@ namespace WeixinApi
         public static void Register(HttpConfiguration config)
         {
             config.Filters.Add(new AuthorizeTokenAttribute() { IsValidation = true });
-            //config.Filters.Add(new ModelValidationAttribute() {  IsValidation=true});
+            config.Filters.Add(new ModelValidationAttribute());
         }
     }
 }

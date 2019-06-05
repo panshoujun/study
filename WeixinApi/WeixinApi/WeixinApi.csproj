@@ -246,6 +246,7 @@
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Filters\AuthorizeTokenAttribute.cs" />
     <Compile Include="Filters\BaseAuthorizeAttribute.cs" />
+    <Compile Include="Filters\ModelValidationAttribute.cs" />
     <Compile Include="Filters\Swagger\ControllerGroup\ControllerGroupAttribute.cs" />
     <Compile Include="Filters\Swagger\HttpAuthHeaderFilter.cs" />
     <Compile Include="Filters\Swagger\Selectors\AreaHttpControllerSelector.cs" />
@@ -284,6 +285,7 @@
     <Compile Include="Models\QY\Msg\BaseQYMsgDto.cs" />
     <Compile Include="Models\QY\Msg\SendNewsDataDto.cs" />
     <Compile Include="Models\QY\Msg\SendTextDataDto.cs" />
+    <Compile Include="Models\Test\ModelValidate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
