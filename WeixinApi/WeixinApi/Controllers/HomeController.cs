@@ -21,6 +21,8 @@ namespace WeixinApi.Controllers
         string openid = "oaTJ91VFhBiK24MFwFMLAhFvBEWE";
         public ActionResult Index()
         {
+            string name = "张三";
+            string panshoujun = $"我的名字叫:{name}";
             //FileLog.AddLog("aasdf");
             //return Redirect("/swagger/ui/index");
             //ViewBag.Title = "Home Page";
